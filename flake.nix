@@ -1,0 +1,63 @@
+{
+  description = "A basic package";
+
+  inputs = {
+    nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
+    systems.url = "github:nix-systems/default";
+    treefmt-nix = {
+      url = "github:numtide/treefmt-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+  };
+
+  outputs =
+    {
+      self,
+      nixpkgs,
+      systems,
+      treefmt-nix,
+    }:
+    let
+      eachSystem = nixpkgs.lib.genAttrs (import systems);
+      pkgsFor =
+        system:
+        import nixpkgs {
+          inherit system;
+          overlays = [ self.overlays.default ];
+        };
+    in
+    {
+      overlays.default = final: prev: {
+        minimal-gnu-elf = final.callPackage ./package-gnu.nix { };
+        minimal-gnu-riscv-elf = final.callPackage ./package-gnu-riscv.nix { };
+        minimal-nasm-elf = final.callPackage ./package-nasm.nix { };
+      };
+
+      packages = eachSystem (
+        system:
+        let
+          pkgs = pkgsFor system;
+        in
+        {
+          default = pkgs.minimal-nasm-elf;
+          inherit (pkgs)
+            minimal-gnu-elf
+            minimal-gnu-riscv-elf
+            minimal-nasm-elf
+            ;
+        }
+      );
+
+      checks.x86_64-linux = self.packages.x86_64-linux;
+
+      formatter = eachSystem (
+        system:
+        (treefmt-nix.lib.evalModule (pkgsFor system) {
+          projectRootFile = "flake.nix";
+          programs.nixfmt.enable = true;
+        }).config.build.wrapper
+      );
+
+      legacyPackages = eachSystem pkgsFor;
+    };
+}
