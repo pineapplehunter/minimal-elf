@@ -58,11 +58,13 @@
         in
         {
           default = pkgs.mkShell {
-            packages = [
-              pkgs.nasm
-              pkgs.gdb
-              pkgs.gcc
-            ];
+            packages =
+              [
+                pkgs.nasm
+              ]
+              ++ pkgs.lib.optionals pkgs.stdenv.hostPlatform.isLinux [
+                pkgs.gdb
+              ];
           };
         }
       );
