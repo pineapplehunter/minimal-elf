@@ -4,7 +4,7 @@
 }:
 
 let
-riscv = pkgsCross.riscv64;
+  riscv = pkgsCross.riscv64;
 in
 
 runCommand "minimal-elf" { nativeBuildInputs = [ riscv.buildPackages.gcc ]; } ''

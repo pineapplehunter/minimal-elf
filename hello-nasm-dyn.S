@@ -1,9 +1,9 @@
 section .text
-global entry
-entry:
+global _start
+_start:
         mov rax, 1 ; write
         mov rdi, 1 ; stdout
-        lea rsi, [hello] ; hello ptr
+        lea rsi, [rel hello] ; hello ptr
         mov rdx, hellolen ; length
         syscall
 
@@ -11,5 +11,6 @@ entry:
         mov rax, 60 ; exit
         syscall
 
-        hello: db "Hello World!", 0xA
-        hellolen: EQU $-hello
+section .rodata
+        hello: db "Hello World!", 0xA, 0
+        hellolen: EQU $-hello - 1
