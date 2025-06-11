@@ -24,8 +24,8 @@
         minimal-gnu-elf = final.callPackage ./package-gnu.nix { };
         minimal-gnu-riscv-elf = final.callPackage ./package-gnu-riscv.nix { };
         minimal-nasm-bin-elf = final.callPackage ./package-nasm-bin.nix { };
-        minimal-nasm-elf = final.callPackage ./package-nasm.nix { };
         minimal-nasm-dyn = final.callPackage ./package-nasm-dyn.nix { };
+        minimal-nasm-elf = final.callPackage ./package-nasm.nix { };
       };
 
       packages = eachSystem (
@@ -39,6 +39,7 @@
             minimal-gnu-elf
             minimal-gnu-riscv-elf
             minimal-nasm-bin-elf
+            minimal-nasm-dyn
             minimal-nasm-elf
             ;
         }
