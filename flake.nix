@@ -63,8 +63,7 @@
         }
       );
 
-      checks.x86_64-linux = self.packages.x86_64-linux;
-
+      checks = eachSystem (system: self.packages.${system});
 
       legacyPackages = eachSystem pkgsFor;
     };
